@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/Resources">
+        <file>resources/qualcomm.jpg</file>
+        <file>resources/dlight.png</file>
+        <file>resources/logoEN.png</file>
+        <file>addPoint.png</file>
+        <file>delPoint.png</file>
+    </qresource>
+</RCC>
