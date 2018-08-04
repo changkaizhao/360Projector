@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent),
     ui->toolBar->addAction(ui->actionAddPoint);
     ui->toolBar->addAction(ui->actionDelPoint);
 
+    setAttribute(Qt::WA_AlwaysShowToolTips);
     setWindowTitle("DLight-Calibrate");
     setWindowIcon(QIcon(":/Resources/resources/dlight.png"));
     resize(800,600);
@@ -36,6 +37,12 @@ MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent),
     //initial Json and Picture
     pictureName = "IMG_0.png";
     jsonName = "IMG_0.json";
+    /* Make sure there is a json file named "IMG_0.json" */
+    QFile jsonFile;
+    jsonFile.setFileName(jsonName);
+    jsonFile.open(QIODevice::ReadWrite);
+    jsonFile.close();
+
     openJson(jsonName, marksJson);
     openPicture(pictureName);
 
@@ -85,6 +92,9 @@ void MainWindow::createGraphicsView()
     graphicsView->setBackgroundBrush(brush);
     graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
     graphicsView->setResizeAnchor(QGraphicsView::AnchorUnderMouse);
+
+    graphicsView->setAttribute(Qt::WA_AlwaysShowToolTips);
+    graphicsView->setToolTipDuration(1500);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *newsize)
@@ -182,12 +192,16 @@ void MainWindow::changeSetting()
     }
 }
 
-void MainWindow::openPicture(const QString &fileName)
+bool MainWindow::openPicture(const QString &fileName)
 {
+    QPixmap picture;
+
     picScene->clear();
 
+    picture = QPixmap(fileName);
+
     graphics_0 = new QGraphicsPixmapItem(0);
-    graphics_0->setPixmap(QPixmap(fileName));
+    graphics_0->setPixmap(picture);
     graphics_0->setScale(1.0);
     graphics_0->setCursor(Qt::CrossCursor);
     picScene->addItem(graphics_0);
@@ -201,6 +215,8 @@ void MainWindow::openPicture(const QString &fileName)
     graphics_0->setTransformOriginPoint(0,0);
 
     graphicsView->initialVariant();
+
+    return true;
 }
 
 void MainWindow::saveJson()
@@ -288,11 +304,12 @@ bool MainWindow::openJson(const QString &fileName, QJsonArray* &Jsons)
                            "是否新建Json文件？",
                             QMessageBox::Yes | QMessageBox::No);
         if(reply == QMessageBox::Yes){
+            /*
             bool ret;
             int newIndex = QInputDialog::getInt(this, tr("GetIndex"),tr("Index"),
                                                 300,300,399,
                                                 1,&ret);
-
+            */
             fileJson.open(QIODevice::ReadWrite);
         }else{
             return false;

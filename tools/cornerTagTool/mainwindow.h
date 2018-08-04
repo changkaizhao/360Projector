@@ -44,7 +44,7 @@ private:
 
     void connectSignalSlot();
     void createGraphicsView();
-    void openPicture(const QString &fileName);
+    bool openPicture(const QString &fileName);
     bool openJson(const QString &fileName, QJsonArray* &Jsons);
     void loadMarks(QJsonArray *Jsons);
     QPointF markPosFromJson(QJsonArray *JsonArray, int order);

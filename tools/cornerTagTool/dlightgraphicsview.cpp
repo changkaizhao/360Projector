@@ -4,6 +4,7 @@
 #include <QScrollBar>
 #include <QGraphicsPixmapItem>
 #include <QDebug>
+#include <QToolTip>
 
 DlightGraphicsView::DlightGraphicsView(QGraphicsScene *scene, QWidget *parent):
     QGraphicsView(scene, parent),
@@ -150,7 +151,7 @@ void DlightGraphicsView::mousePressEvent(QMouseEvent *event)
             setMarkItem(markItem);
             //send signals
             emit changeMarkItem(markItem_processing->itemLocation(),
-                                 markItem_processing->itemRawPos(),
+                                markItem_processing->itemRawPos(),
                                 markItem_processing->itemJsonIndex());
 
             markpointMoving = true;
@@ -190,9 +191,12 @@ void DlightGraphicsView::mouseMoveEvent(QMouseEvent *event)
 
         //send signals
         emit changeMarkItem(markItem_processing->itemLocation(),
-                             markItem_processing->itemRawPos(),
+                            markItem_processing->itemRawPos(),
                             markItem_processing->itemJsonIndex());
     }else{
+        DlightGraphicsEllipseItem *markItem;
+        markItem = qgraphicsitem_cast<DlightGraphicsEllipseItem *>(itemAt(event->x(),event->y()));
+        setCurrentItem(markItem);
         QGraphicsView::mouseMoveEvent(event);
     }
 }
@@ -226,6 +230,33 @@ void DlightGraphicsView::setMarkItem(DlightGraphicsEllipseItem *markItem)
         markItem_processing->setBrush(QBrush(Qt::cyan));
     }else{
         markpointMoving = false;
+    }
+}
+
+void DlightGraphicsView::setCurrentItem(DlightGraphicsEllipseItem *Item)
+{
+    static QBrush oldColor = Qt::NoBrush;
+    static DlightGraphicsEllipseItem *oldItem;
+
+    if(Item != 0){
+        if(oldColor == Qt::NoBrush){
+            oldColor = Item->brush();
+            Item->setBrush(Qt::gray);
+            oldItem = Item;
+
+            setToolTip(QString("    row: ").append(QString("").setNum(Item->itemLocation().y()+1)).append('\n').
+                append(QString("      col: ").append(QString("").setNum(Item->itemLocation().x()+1)).append('\n')).
+                append(QString(" index: ").append(QString("").setNum(Item->itemJsonIndex()))));
+        }else if(Item == markItem_processing){
+            oldColor = Qt::cyan;
+        }
+    }else{
+        if(oldColor != Qt::NoBrush){
+            oldItem->setBrush(oldColor);
+            oldColor = Qt::NoBrush;
+
+            setToolTip("");
+        }
     }
 }
 

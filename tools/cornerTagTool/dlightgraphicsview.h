@@ -35,6 +35,8 @@ private:
     DlightGraphicsEllipseItem *markItem_processing;
     QGraphicsPixmapItem *picture;
 
+    void setCurrentItem(DlightGraphicsEllipseItem *Item);
+
 
 signals:
     void changeMarkItem(QPoint location, QPointF position, int jsonIndex);
